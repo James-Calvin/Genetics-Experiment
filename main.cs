@@ -1,111 +1,132 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
-/*
-What should the genetics object do?
-Constructor based on parents
-Add traits and which is dominant
-Add genes
-create a default
-create a random
-create a child
-mutate
-allow for co-dominant traits?
-*/
-
-class DnaTemplate
+class Gene<T>
 {
+  public T Value { get; set; }
+  public int Dominance { get; set; }
+
+  public Gene(T value, int dominance)
+  {
+    Value = value;
+    Dominance = dominance;
+  }
+}
+
+interface ITrait
+{
+  object GetDominantValue();
+
+}
+
+class Trait<T> : ITrait
+{
+  public Gene<T> Gene1 { get; set; }
+  public Gene<T> Gene2 { get; set; }
+
+  public Trait(Gene<T> gene1, Gene<T> gene2)
+  {
+    Gene1 = gene1;
+    Gene2 = gene2;
+  }
+
+  public T GetDominantValue()
+  {
+    return Gene1.Dominance >= Gene2.Dominance ? Gene1.Value : Gene2.Value;
+  }
+
+  object ITrait.GetDominantValue()
+  {
+    return GetDominantValue();
+  }
+}
 
 
-  public void AddGeneDefinition(GeneDefinition gene)
+class GeneticObject
+{
+  public Dictionary<string, ITrait> Traits { get; set; }
+
+  public GeneticObject()
+  {
+    Traits = new Dictionary<string, ITrait>();
+  }
+
+  public void AddTrait(string name, ITrait trait)
+  {
+    Traits[name] = trait;
+  }
+
+  public object GetTraitValue(string name)
+  {
+    if (Traits.ContainsKey(name))
+    {
+      return Traits[name].GetDominantValue();
+    }
+    else
+    {
+      throw new Exception("Trait not found: " + name);
+    }
+  }
+}
+
+class GeneticEngine
+{
+  public static GeneticObject CreateObject(Dictionary<string, Tuple<ITrait, ITrait>> traits)
+  {
+    var obj = new GeneticObject();
+    foreach (var trait in traits)
+    {
+      var combinedTrait = CombineTraits(trait.Value.Item1, trait.Value.Item2);
+      obj.AddTrait(trait.Key, combinedTrait);
+    }
+    return obj;
+  }
+
+  private static ITrait CombineTraits(ITrait trait1, ITrait trait2)
+  {
+    throw new NotImplementedException();
+    // implement the logic for combining traits. You could randomly choose a gene from each trait.
+  }
+
+  public static GeneticObject Combine(GeneticObject parent1, GeneticObject parent2)
   {
     throw new NotImplementedException();
   }
 
-  public Genotype InstantiateGenotype()
+  public void Mutate(GeneticObject obj)
   {
     throw new NotImplementedException();
   }
 }
 
-class Genotype
-{
+// 💔🧡💛💚💙💜🖤🤍
+enum Color { Red, Orange, Yellow, Green, Blue, Purple, Black, White };
 
-}
-
-
-class GeneDefinition
-{
-  string name;
-  int range;
-
-  public GeneDefinition(string name, int range)
-  {
-    this.name = name;
-    this.range = range;
-  }
-
-  public Gene MakeGene()
-  {
-    return new Gene(name, range);
-  }
-
-  public Gene MakeGene(int value1, int value2)
-  {
-    if (!WithinRange(value1)) throw new ArgumentException("value1 out of range");
-    if (!WithinRange(value2)) throw new ArgumentException("value2 out of range");
-    return new Gene(name, range, new int[] { value1, value2 });
-  }
-
-  public bool WithinRange(int value)
-  {
-    return (value < range - 1 && value >= 0);
-  }
-
-}
-
-class Gene
-{
-  string name;
-  int range;
-  int[] values = new int[] { 0, 0 };
-
-  public Gene(string name, int range)
-  {
-    this.name = name;
-    this.range = range;
-  }
-
-  public Gene(string name, int range, int[] values)
-  {
-    this.name = name;
-    this.range = range;
-    this.values = values;
-  }
-
-  public void SetValues(int value1, int value2)
-  {
-    this.values[0] = value1;
-    this.values[1] = value2;
-  }
-}
+// ⚪⬜🤍
+enum Shape { Circle, Square, Heart }
 
 
 class Program
 {
-  public static void Main(string[] args)
+  public static void Main(string[] _)
   {
-    // How would we like to use Genetics?
+    // Define the color genes
+    Gene<Color> colorGeneRed = new(Color.Red, 1);
+    Gene<Color> colorGeneOrange = new(Color.Orange, 2);
+    Gene<Color> colorGeneYellow = new(Color.Yellow, 3);
+    Gene<Color> colorGeneGreen = new(Color.Green, 4);
+    Gene<Color> colorGeneBlue = new(Color.Blue, 5);
+    Gene<Color> colorGenePurple = new(Color.Purple, 6);
+    Gene<Color> colorGeneBlack = new(Color.Black, 7);
+    Gene<Color> colorGeneWhite = new(Color.White, 8);
 
-    // Instantiate a blank template
-    var flowerDna = new DnaTemplate();
+    // Define the shape genes
+    Gene<Shape> shapeGeneCircle = new(Shape.Circle, 1);
+    Gene<Shape> shapeGeneSquare = new(Shape.Square, 2);
+    Gene<Shape> shapeGeneHeart = new(Shape.Heart, 3);
 
-    // Define the possible Gene space
-    var shapeGene = new GeneDefinition("shape", 3); // ⚪🤍⬜
-    flowerDna.AddGeneDefinition(shapeGene);
-
-    var colorGene = new GeneDefinition("color", 8); // 💔🧡💛💚💙💜🖤🤍
-    flowerDna.AddGeneDefinition(colorGene);
-
-    var flower1 = flowerDna.InstantiateGenotype();
+    GeneticObject parent1 = new();
+    Trait<Color> colorTrait1 = new(colorGeneBlue, colorGeneRed);
   }
 }
