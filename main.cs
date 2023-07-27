@@ -140,6 +140,77 @@ class GeneticEngine
   }
 }
 
+class TraitDefinition
+{
+  private readonly List<Gene> genes;
+
+  public TraitDefinition()
+  {
+    genes = new List<Gene>();
+  }
+
+  public void AddGene(Gene gene)
+  {
+    genes.Add(gene);
+    // We should probably do some checks here
+    // Like co-dominance (same dominance value)
+  }
+
+  public Gene GetGene(int index)
+  {
+    return genes[index];
+  }
+
+  public int GetIndex(Gene gene)
+  {
+    int index = 0;
+    bool wasFound = false;
+
+    genes.ForEach(searchGene =>
+    {
+      if (searchGene.Dominance == gene.Dominance && searchGene.Value == gene.Value)
+      {
+        wasFound = true;
+        return;
+      }
+      index++;
+    });
+
+    if (wasFound)
+    {
+      return index;
+    }
+
+    throw new KeyNotFoundException("The gene is not in Trait Dictionary");
+  }
+
+  public Gene Above(Gene gene)
+  {
+    int index = this.GetIndex(gene);
+    if (index > 0)
+    {
+      return genes[index - 1];
+    }
+    else
+    {
+      return null;
+    }
+  }
+
+  public Gene Below(Gene gene)
+  {
+    int index = this.GetIndex(gene);
+    if (index < genes.Count - 1)
+    {
+      return genes[index + 1];
+    }
+    else
+    {
+      return null;
+    }
+  }
+}
+
 class Statistic<T>
 {
   private readonly Dictionary<T, int> record = new();
@@ -199,7 +270,7 @@ class Statistic<T>
   }
 }
 
-// 💔🧡💛💚💙💜🖤🤍
+// ❤️🧡💛💚💙💜🖤🤍
 enum Color { Red, Orange, Yellow, Green, Blue, Purple, Black, White };
 
 // ⚪⬜🤍
@@ -228,14 +299,16 @@ class Program
   public static void Main(string[] _)
   {
     // Define the color genes
-    Gene colorGeneRed = new((int)Color.Red, 1);
-    Gene colorGeneOrange = new((int)Color.Orange, 2);
-    Gene colorGeneYellow = new((int)Color.Yellow, 3);
-    Gene colorGeneGreen = new((int)Color.Green, 4);
-    Gene colorGeneBlue = new((int)Color.Blue, 5);
-    Gene colorGenePurple = new((int)Color.Purple, 6);
-    Gene colorGeneBlack = new((int)Color.Black, 7);
-    Gene colorGeneWhite = new((int)Color.White, 8);
+    TraitDefinition colors = new();
+    colors.AddGene(new Gene((int)Color.Red, 1));
+    colors.AddGene(new Gene((int)Color.Orange, 2));
+    colors.AddGene(new Gene((int)Color.Yellow, 3));
+    colors.AddGene(new Gene((int)Color.Green, 4));
+    colors.AddGene(new Gene((int)Color.Blue, 5));
+    colors.AddGene(new Gene((int)Color.Purple, 6));
+    colors.AddGene(new Gene((int)Color.Black, 7));
+    colors.AddGene(new Gene((int)Color.White, 8));
+
 
     // Define the shape genes
     Gene shapeGeneCircle = new((int)Shape.Circle, 3);
@@ -244,14 +317,14 @@ class Program
 
     // Parent1
     GeneticObject parent1 = new();
-    Trait colorTrait1 = new(colorGeneBlue, colorGeneRed);
+    Trait colorTrait1 = new(colors.GetGene(5), colors.GetGene(1));
     parent1.AddTrait("color", colorTrait1);
     Trait shapeTrait1 = new(shapeGeneHeart, shapeGeneSquare);
     parent1.AddTrait("shape", shapeTrait1);
 
     // Parent2
     GeneticObject parent2 = new();
-    Trait colorTrait2 = new(colorGeneRed, colorGeneOrange);
+    Trait colorTrait2 = new(colors.GetGene(1), colors.GetGene(2));
     parent2.AddTrait("color", colorTrait2);
     Trait shapeTrait2 = new(shapeGeneCircle, shapeGeneHeart);
     parent2.AddTrait("shape", shapeTrait2);
@@ -261,32 +334,32 @@ class Program
     Console.WriteLine(RenderColoredShape(parent2));
 
     // Statistics Setup
-    Statistic<Color> colors = new();
-    Statistic<Shape> shapes = new();
+    Statistic<Color> colorStatistics = new();
+    Statistic<Shape> shapeStatistics = new();
 
     // Making babies 😏
-    int childCount = 500000;
+    int childCount = 50;
     for (int i = 0; i < childCount; i++)
     {
       var child = GeneticEngine.Combine(parent1, parent2);
 
       Color myColor = (Color)child.GetTrait("color").GetDominantValue();
-      colors.IncrementMetric(myColor);
+      colorStatistics.IncrementMetric(myColor);
 
       Shape myShape = (Shape)child.GetTrait("shape").GetDominantValue();
-      shapes.IncrementMetric(myShape);
+      shapeStatistics.IncrementMetric(myShape);
     }
 
     Console.WriteLine();
-    int totalColors = colors.GetTotal();
-    foreach (var color in colors.GetRecord())
+    int totalColors = colorStatistics.GetTotal();
+    foreach (var color in colorStatistics.GetRecord())
     {
       Console.WriteLine(color.Key + ": " + (100 * color.Value / totalColors) + "%");
     }
 
     Console.WriteLine();
-    int totalShapes = shapes.GetTotal();
-    foreach (var shape in shapes.GetRecord())
+    int totalShapes = shapeStatistics.GetTotal();
+    foreach (var shape in shapeStatistics.GetRecord())
     {
       Console.WriteLine(shape.Key + ": " + (100 * shape.Value / totalShapes) + "%");
     }
