@@ -13,6 +13,12 @@ namespace Genetic
       Allele2 = allele2;
     }
 
+    public Genotype(Allele allele)
+    {
+      Allele1 = allele;
+      Allele2 = allele;
+    }
+
     public static Genotype Combine(Genotype genotype1, Genotype genotype2)
     {
       return Combine(genotype1, genotype2, 0.0);
@@ -27,11 +33,11 @@ namespace Genetic
       {
         if (rng.Next(2) == 0)
         {
-          allele1.Mutate();
+          allele1 = allele1.Mutate();
         }
         else
         {
-          allele2.Mutate();
+          allele2 = allele2.Mutate();
         }
       }
       return new Genotype(allele1, allele2);

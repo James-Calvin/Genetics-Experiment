@@ -20,20 +20,21 @@ namespace Genetic
       this.geneDefinition = geneDefinition;
     }
 
-    public void Mutate()
+    public Allele Mutate()
     {
-      if (geneDefinition == null) throw new System.Exception("Must set Gene Definition before mutating");
+      if (geneDefinition == null) throw new Exception("Must set Gene Definition before mutating");
 
       // We want to guarantee a mutation,
       // so if we cannot mutate down, then we mutate up
-      if (!geneDefinition.CanMutateDown(this) ||
-      (new Random().Next(2) == 0 && geneDefinition.CanMutateUp(this)))
+      int alleleIndex = geneDefinition.GetIndex(this);
+      if (!geneDefinition.CanMutateDown(alleleIndex) ||
+      (geneDefinition.CanMutateUp(alleleIndex) && new Random().Next(2) == 0))
       {
-        geneDefinition.MutateUp(this);
+        return geneDefinition.MutateUp(alleleIndex);
       }
       else
       {
-        geneDefinition.MutateDown(this);
+        return geneDefinition.MutateDown(alleleIndex);
       }
     }
   }

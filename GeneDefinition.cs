@@ -28,37 +28,26 @@ namespace Genetic
 
     public int GetIndex(Allele allele)
     {
-      int index = 0;
-      bool wasFound = false;
 
-      alleles.ForEach(searchGene =>
+      for (int i = 0; i < alleles.Count; i++)
       {
-        if (searchGene.Dominance == allele.Dominance && searchGene.Value == allele.Value)
-        {
-          wasFound = true;
-          return;
-        }
-        index++;
-      });
-
-      if (wasFound)
-      {
-        return index;
+        if (alleles[i].Value == allele.Value &&
+        alleles[i].Dominance == allele.Dominance)
+          return i;
       }
 
       throw new Exception("The allele is not in this gene definition");
     }
 
-    public Allele MutateDown(Allele allele)
+    public Allele MutateDown(int index)
     {
-      int index = this.GetIndex(allele);
       if (CanMutateDown(index))
       {
         return alleles[index - 1];
       }
       else
       {
-        return allele;
+        return alleles[index];
       }
     }
 
@@ -74,16 +63,15 @@ namespace Genetic
       return CanMutateDown(index);
     }
 
-    public Allele MutateUp(Allele allele)
+    public Allele MutateUp(int index)
     {
-      int index = GetIndex(allele);
       if (CanMutateUp(index))
       {
         return alleles[index + 1];
       }
       else
       {
-        return allele;
+        return alleles[index];
       }
     }
 

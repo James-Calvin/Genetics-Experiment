@@ -6,7 +6,7 @@ using LocalTestingUtilities;
 enum Color { Red, Orange, Yellow, Green, Blue, Purple, Black, White }
 
 // ⚪⬜🤍
-enum Shape { Circle, Square, Heart }
+enum Shape { Circle, Square, Heart, Food }
 
 class Program
 {
@@ -22,6 +22,7 @@ class Program
       { "🔴", "🟠", "🟡", "🟢", "🔵", "🟣", "⚫", "⚪" },
       { "🟥", "🟧", "🟨", "🟩", "🟦", "🟪", "⬛", "⬜"},
       { "❤️", "🧡", "💛", "💚", "💙", "💜", "🖤", "🤍"},
+      { "🍒", "🍊", "🍌", "🍏", "🍭", "🍇", "🍩", "🍦"},
       };
 
     return stateSpace[(int)shape, (int)color];
@@ -45,12 +46,13 @@ class Program
     shapes.AddAllele(new Allele((int)Shape.Circle, 3));
     shapes.AddAllele(new Allele((int)Shape.Square, 2));
     shapes.AddAllele(new Allele((int)Shape.Heart, 1));
+    shapes.AddAllele(new Allele((int)Shape.Food, 0));
 
     // Parent1
     GeneticObject parent1 = new();
     Genotype colorTrait1 = new(colors.GetGene((int)Color.Blue), colors.GetGene((int)Color.Red));
     parent1.AddGenotype("color", colorTrait1);
-    Genotype shapeTrait1 = new(shapes.GetGene((int)Shape.Heart), shapes.GetGene((int)Shape.Square));
+    Genotype shapeTrait1 = new(shapes.GetGene((int)Shape.Square), shapes.GetGene((int)Shape.Heart));
     parent1.AddGenotype("shape", shapeTrait1);
 
     // Parent2
@@ -69,7 +71,7 @@ class Program
     Statistic<Shape> shapeStatistics = new();
 
     // Making babies 😏
-    int childCount = 5000;
+    int childCount = 500000;
     for (int i = 0; i < childCount; i++)
     {
       var child = GeneticObject.Combine(parent1, parent2, 1);
