@@ -39,6 +39,27 @@ namespace Genetic
       return Combine(obj1, obj2, 0.0);
     }
 
+    public void Mutate(string traitName, int alleleIndex)
+    {
+      if (GenotypeExists(traitName))
+      {
+        switch (alleleIndex)
+        {
+          case 1:
+            Genotypes[traitName].Allele1 = Genotypes[traitName].Allele1.Mutate();
+            break;
+
+          case 2:
+            Genotypes[traitName].Allele2 = Genotypes[traitName].Allele2.Mutate();
+            break;
+
+          default:
+            throw new Exception("Invalid alleleIndex. alleleIndex is either 1 or 2.");
+        }
+      }
+
+    }
+
     public static GeneticObject Combine(GeneticObject parent1, GeneticObject parent2, double mutationProbability)
     {
       GeneticObject child = new();

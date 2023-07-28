@@ -1,6 +1,5 @@
 using System;
 using Genetic;
-using LocalTestingUtilities;
 
 // ❤️🧡💛💚💙💜🖤🤍
 enum Color { Red, Orange, Yellow, Green, Blue, Purple, Black, White }
@@ -31,71 +30,90 @@ class Program
   {
     // Define the color genes
     GeneDefinition colors = new();
-    colors.AddAllele(new Allele((int)Color.Red, 1));
-    colors.AddAllele(new Allele((int)Color.Orange, 2));
-    colors.AddAllele(new Allele((int)Color.Yellow, 3));
-    colors.AddAllele(new Allele((int)Color.Green, 4));
-    colors.AddAllele(new Allele((int)Color.Blue, 5));
-    colors.AddAllele(new Allele((int)Color.Purple, 6));
-    colors.AddAllele(new Allele((int)Color.Black, 7));
-    colors.AddAllele(new Allele((int)Color.White, 8));
+    colors.CreateAllele((int)Color.Red, 1);
+    colors.CreateAllele((int)Color.Orange, 2);
+    colors.CreateAllele((int)Color.Yellow, 3);
+    colors.CreateAllele((int)Color.Green, 4);
+    colors.CreateAllele((int)Color.Blue, 5);
+    colors.CreateAllele((int)Color.Purple, 6);
+    colors.CreateAllele((int)Color.Black, 7);
+    colors.CreateAllele((int)Color.White, 8);
 
 
     // Define the shape genes
     GeneDefinition shapes = new();
-    shapes.AddAllele(new Allele((int)Shape.Circle, 3));
-    shapes.AddAllele(new Allele((int)Shape.Square, 2));
-    shapes.AddAllele(new Allele((int)Shape.Heart, 1));
-    shapes.AddAllele(new Allele((int)Shape.Food, 0));
+    shapes.CreateAllele((int)Shape.Circle, 3);
+    shapes.CreateAllele((int)Shape.Square, 2);
+    shapes.CreateAllele((int)Shape.Heart, 1);
+    shapes.CreateAllele((int)Shape.Food, 0);
 
     // Parent1
     GeneticObject parent1 = new();
-    Genotype colorTrait1 = new(colors.GetGene((int)Color.Blue), colors.GetGene((int)Color.Red));
+    Genotype colorTrait1 = new(colors.GetAllele((int)Color.Blue), colors.GetAllele((int)Color.Red));
     parent1.AddGenotype("color", colorTrait1);
-    Genotype shapeTrait1 = new(shapes.GetGene((int)Shape.Square), shapes.GetGene((int)Shape.Heart));
+    Genotype shapeTrait1 = new(shapes.GetAllele((int)Shape.Square), shapes.GetAllele((int)Shape.Heart));
     parent1.AddGenotype("shape", shapeTrait1);
 
     // Parent2
     GeneticObject parent2 = new();
-    Genotype colorTrait2 = new(colors.GetGene((int)Color.Red), colors.GetGene((int)Color.Orange));
+    Genotype colorTrait2 = new(colors.GetAllele((int)Color.Red), colors.GetAllele((int)Color.Orange));
     parent2.AddGenotype("color", colorTrait2);
-    Genotype shapeTrait2 = new(shapes.GetGene((int)Shape.Circle), shapes.GetGene((int)Shape.Heart));
+    Genotype shapeTrait2 = new(shapes.GetAllele((int)Shape.Circle), shapes.GetAllele((int)Shape.Heart));
     parent2.AddGenotype("shape", shapeTrait2);
+
+    Console.WriteLine("Welcome to my Genetics Engine demonstration");
+    Console.WriteLine("Press [space] to make another child from the parents");
+    Console.WriteLine("Press '1' to replace parent 1 with the current child");
+    Console.WriteLine("Press '2' to replace parent 2 with the current child");
+    Console.WriteLine("Press 'Q' to quit");
 
     Console.Write("Parents: ");
     Console.Write(RenderColoredShape(parent1));
     Console.WriteLine(RenderColoredShape(parent2));
 
-    // Statistics Setup
-    Statistic<Color> colorStatistics = new();
-    Statistic<Shape> shapeStatistics = new();
 
     // Making babies 😏
-    int childCount = 500000;
-    for (int i = 0; i < childCount; i++)
+    var child = GeneticObject.Combine(parent1, parent2, 0.15);
+
+    bool willQuit = false;
+    while (!willQuit)
     {
-      var child = GeneticObject.Combine(parent1, parent2, 1);
+      Console.Write(RenderColoredShape(child));
+      Console.Write(" " + (Color)child.Genotypes["color"].Allele1.Value + ":" + (Color)child.Genotypes["color"].Allele2.Value);
+      Console.Write(" " + (Shape)child.Genotypes["shape"].Allele1.Value + ":" + (Shape)child.Genotypes["shape"].Allele2.Value);
+      Console.WriteLine();
 
-      Color myColor = (Color)child.GetGenotype("color").GetDominantValue();
-      colorStatistics.IncrementMetric(myColor);
+      var response = Console.ReadKey();
+      switch (response.Key)
+      {
+        case ConsoleKey.Spacebar:
+          child = GeneticObject.Combine(parent1, parent2, 0.25);
+          break;
 
-      Shape myShape = (Shape)child.GetGenotype("shape").GetDominantValue();
-      shapeStatistics.IncrementMetric(myShape);
+        case ConsoleKey.D1:
+          parent1 = child;
+
+          Console.Write("Parents: ");
+          Console.Write(RenderColoredShape(parent1));
+          Console.WriteLine(RenderColoredShape(parent2));
+          break;
+
+        case ConsoleKey.D2:
+          parent2 = child;
+          Console.Write("Parents: ");
+          Console.Write(RenderColoredShape(parent1));
+          Console.WriteLine(RenderColoredShape(parent2));
+          break;
+
+        case ConsoleKey.Q:
+          willQuit = true;
+          break;
+
+        default:
+          Console.WriteLine("Invalid key pressed.");
+          break;
+
+      }
     }
-
-    Console.WriteLine();
-    int totalColors = colorStatistics.GetTotal();
-    foreach (var color in colorStatistics.GetRecord())
-    {
-      Console.WriteLine(color.Key + ": " + (100 * color.Value / totalColors) + "%");
-    }
-
-    Console.WriteLine();
-    int totalShapes = shapeStatistics.GetTotal();
-    foreach (var shape in shapeStatistics.GetRecord())
-    {
-      Console.WriteLine(shape.Key + ": " + (100 * shape.Value / totalShapes) + "%");
-    }
-
   }
 }

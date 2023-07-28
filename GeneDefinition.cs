@@ -21,7 +21,13 @@ namespace Genetic
       // And sort by dominance, asc
     }
 
-    public Allele GetGene(int index)
+    public void CreateAllele(int value, int dominance)
+    {
+      Allele allele = new(value, dominance);
+      AddAllele(allele);
+    }
+
+    public Allele GetAllele(int index)
     {
       return alleles[index];
     }

@@ -4,6 +4,7 @@ namespace Genetic
 {
   class Genotype
   {
+    private readonly static Random rng = new();
     public Allele Allele1 { get; set; }
     public Allele Allele2 { get; set; }
 
@@ -26,20 +27,18 @@ namespace Genetic
 
     public static Genotype Combine(Genotype genotype1, Genotype genotype2, double mutationProbability)
     {
-      Random rng = new();
+
       Allele allele1 = rng.Next(2) == 0 ? genotype1.Allele1 : genotype1.Allele2;
       Allele allele2 = rng.Next(2) == 0 ? genotype2.Allele1 : genotype2.Allele2;
       if (rng.NextDouble() < mutationProbability)
       {
-        if (rng.Next(2) == 0)
-        {
-          allele1 = allele1.Mutate();
-        }
-        else
-        {
-          allele2 = allele2.Mutate();
-        }
+        allele1 = allele1.Mutate();
       }
+      if (rng.NextDouble() < mutationProbability)
+      {
+        allele2 = allele2.Mutate();
+      }
+
       return new Genotype(allele1, allele2);
     }
 
