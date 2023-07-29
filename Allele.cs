@@ -4,9 +4,8 @@ namespace Genetic
 {
   class Allele
   {
-    public static Random rng = new();
-    public int Value { get; set; }
-    public int Dominance { get; set; }
+    public int Value { get; }
+    public int Dominance { get; }
 
     private GeneDefinition geneDefinition;
 
@@ -20,13 +19,7 @@ namespace Genetic
     {
       this.geneDefinition = geneDefinition;
     }
-
-    public Allele Mutate()
-    {
-      return Mutate(rng.Next(2) == 0);
-    }
-
-    public Allele Mutate(bool mutatesUp)
+    public Allele Mutate(bool mutateUp)
     {
       if (geneDefinition == null) throw new Exception("Must set Gene Definition before mutating");
 
@@ -34,7 +27,7 @@ namespace Genetic
       // so if we cannot mutate down, then we mutate up
       int alleleIndex = geneDefinition.GetIndex(this);
       if (!geneDefinition.CanMutateDown(alleleIndex) ||
-      (geneDefinition.CanMutateUp(alleleIndex) && mutatesUp == true))
+      (geneDefinition.CanMutateUp(alleleIndex) && mutateUp == true))
       {
         return geneDefinition.MutateUp(alleleIndex);
       }

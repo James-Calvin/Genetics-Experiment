@@ -63,12 +63,6 @@ namespace Genetic
       return false;
     }
 
-    public bool CanMutateDown(Allele allele)
-    {
-      int index = GetIndex(allele);
-      return CanMutateDown(index);
-    }
-
     public Allele MutateUp(int index)
     {
       if (CanMutateUp(index))
@@ -79,12 +73,6 @@ namespace Genetic
       {
         return alleles[index];
       }
-    }
-
-    public bool CanMutateUp(Allele allele)
-    {
-      int index = GetIndex(allele);
-      return CanMutateUp(index);
     }
 
     public bool CanMutateUp(int index)

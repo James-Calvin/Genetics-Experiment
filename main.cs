@@ -21,7 +21,7 @@ class Program
       { "🔴", "🟠", "🟡", "🟢", "🔵", "🟣", "⚫", "⚪" },
       { "🟥", "🟧", "🟨", "🟩", "🟦", "🟪", "⬛", "⬜"},
       { "❤️", "🧡", "💛", "💚", "💙", "💜", "🖤", "🤍"},
-      { "🍒", "🍊", "🍌", "🍏", "🍭", "🍇", "🍩", "🍦"},
+      { "🥩", "🍊", "🧀", "🥬", "🍭", "🍇", "🍩", "🍦"},
       };
 
     return stateSpace[(int)shape, (int)color];
@@ -72,27 +72,27 @@ class Program
     Console.WriteLine(RenderColoredShape(parent2));
 
 
-    // Making babies 😏
-    var child = GeneticObject.Combine(parent1, parent2, 0.15);
+    // Making a child 😏
+    double mutationRate = 1;
+    Random rng = new();
+    var child = GeneticObject.Combine(parent1, parent2, rng.Next(4));
 
     bool willQuit = false;
     while (!willQuit)
     {
       Console.Write(RenderColoredShape(child));
-      Console.Write(" " + (Color)child.Genotypes["color"].Allele1.Value + ":" + (Color)child.Genotypes["color"].Allele2.Value);
-      Console.Write(" " + (Shape)child.Genotypes["shape"].Allele1.Value + ":" + (Shape)child.Genotypes["shape"].Allele2.Value);
+      Console.Write(" " + (Color)child.GetAlleleValue("color", 0) + ":" + (Color)child.GetAlleleValue("color", 1));
+      Console.Write(" " + (Shape)child.GetAlleleValue("shape", 0) + ":" + (Shape)child.GetAlleleValue("shape", 1));
       Console.WriteLine();
 
-      var response = Console.ReadKey();
+      var response = Console.ReadKey(true);
       switch (response.Key)
       {
         case ConsoleKey.Spacebar:
-          child = GeneticObject.Combine(parent1, parent2, 0.25);
           break;
 
         case ConsoleKey.D1:
           parent1 = child;
-
           Console.Write("Parents: ");
           Console.Write(RenderColoredShape(parent1));
           Console.WriteLine(RenderColoredShape(parent2));
@@ -113,6 +113,11 @@ class Program
           Console.WriteLine("Invalid key pressed.");
           break;
 
+      }
+      child = GeneticObject.Combine(parent1, parent2, rng.Next(4));
+      if (rng.NextDouble() < mutationRate)
+      {
+        child.Mutate("color", rng.Next(2), rng.Next(2) == 0);
       }
     }
   }
