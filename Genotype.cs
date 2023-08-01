@@ -1,4 +1,4 @@
-namespace Genetic;
+namespace GeneticsEngine;
 class Genotype
 {
   private Allele Allele1;
@@ -18,8 +18,8 @@ class Genotype
 
   public static Genotype Combine(Genotype genotype1, Genotype genotype2, int configuration)
   {
-    Allele allele1 = (configuration & 0x1) == 0 ? genotype1.Allele1 : genotype1.Allele2;
-    Allele allele2 = (configuration & 0x10) == 0 ? genotype2.Allele1 : genotype2.Allele2;
+    Allele allele1 = (configuration & 0b1) == 0 ? genotype1.Allele1 : genotype1.Allele2;
+    Allele allele2 = (configuration & 0b10) == 0 ? genotype2.Allele1 : genotype2.Allele2;
     return new Genotype(allele1, allele2);
   }
 

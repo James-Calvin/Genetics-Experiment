@@ -1,40 +1,38 @@
 using System;
 
-namespace Genetic
+namespace GeneticsEngine;
+class Allele
 {
-  class Allele
+  public int Value { get; }
+  public int Dominance { get; }
+
+  private GeneDefinition geneDefinition;
+
+  public Allele(int value, int dominance)
   {
-    public int Value { get; }
-    public int Dominance { get; }
+    Value = value;
+    Dominance = dominance;
+  }
 
-    private GeneDefinition geneDefinition;
+  public void SetGeneDefinition(GeneDefinition geneDefinition)
+  {
+    this.geneDefinition = geneDefinition;
+  }
+  public Allele Mutate(bool mutateUp)
+  {
+    if (geneDefinition == null) throw new Exception("Must set Gene Definition before mutating");
 
-    public Allele(int value, int dominance)
+    // We want to guarantee a mutation,
+    // so if we cannot mutate down, then we mutate up
+    int alleleIndex = geneDefinition.GetIndex(this);
+    if (!geneDefinition.CanMutateDown(alleleIndex) ||
+    (geneDefinition.CanMutateUp(alleleIndex) && mutateUp == true))
     {
-      Value = value;
-      Dominance = dominance;
+      return geneDefinition.MutateUp(alleleIndex);
     }
-
-    public void SetGeneDefinition(GeneDefinition geneDefinition)
+    else
     {
-      this.geneDefinition = geneDefinition;
-    }
-    public Allele Mutate(bool mutateUp)
-    {
-      if (geneDefinition == null) throw new Exception("Must set Gene Definition before mutating");
-
-      // We want to guarantee a mutation,
-      // so if we cannot mutate down, then we mutate up
-      int alleleIndex = geneDefinition.GetIndex(this);
-      if (!geneDefinition.CanMutateDown(alleleIndex) ||
-      (geneDefinition.CanMutateUp(alleleIndex) && mutateUp == true))
-      {
-        return geneDefinition.MutateUp(alleleIndex);
-      }
-      else
-      {
-        return geneDefinition.MutateDown(alleleIndex);
-      }
+      return geneDefinition.MutateDown(alleleIndex);
     }
   }
 }

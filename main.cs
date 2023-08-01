@@ -1,5 +1,5 @@
 using System;
-using Genetic;
+using GeneticsEngine;
 
 // ❤️🧡💛💚💙💜🖤🤍
 enum Color { Red, Orange, Yellow, Green, Blue, Purple, Black, White }
@@ -39,7 +39,6 @@ class Program
     colors.CreateAllele((int)Color.Black, 7);
     colors.CreateAllele((int)Color.White, 8);
 
-
     // Define the shape genes
     GeneDefinition shapes = new();
     shapes.CreateAllele((int)Shape.Circle, 3);
@@ -49,19 +48,20 @@ class Program
 
     // Parent1
     GeneticObject parent1 = new();
-    Genotype colorTrait1 = new(colors.GetAllele((int)Color.Blue), colors.GetAllele((int)Color.Red));
-    parent1.AddGenotype("color", colorTrait1);
-    Genotype shapeTrait1 = new(shapes.GetAllele((int)Shape.Square), shapes.GetAllele((int)Shape.Heart));
-    parent1.AddGenotype("shape", shapeTrait1);
+    Genotype colorGenes1 = new(colors.GetAllele((int)Color.Blue), colors.GetAllele((int)Color.Red));
+    parent1.AddGenotype("color", colorGenes1);
+    Genotype shapeGenes1 = new(shapes.GetAllele((int)Shape.Square), shapes.GetAllele((int)Shape.Heart));
+    parent1.AddGenotype("shape", shapeGenes1);
 
     // Parent2
     GeneticObject parent2 = new();
-    Genotype colorTrait2 = new(colors.GetAllele((int)Color.Red), colors.GetAllele((int)Color.Orange));
-    parent2.AddGenotype("color", colorTrait2);
-    Genotype shapeTrait2 = new(shapes.GetAllele((int)Shape.Circle), shapes.GetAllele((int)Shape.Heart));
-    parent2.AddGenotype("shape", shapeTrait2);
+    Genotype colorGenes2 = new(colors.GetAllele((int)Color.Red), colors.GetAllele((int)Color.Orange));
+    parent2.AddGenotype("color", colorGenes2);
+    Genotype shapeGenes2 = new(shapes.GetAllele((int)Shape.Circle), shapes.GetAllele((int)Shape.Heart));
+    parent2.AddGenotype("shape", shapeGenes2);
 
-    Console.WriteLine("Welcome to my Genetics Engine demonstration");
+    // Introduction
+    Console.WriteLine("Welcome to the Genetics Engine demonstration");
     Console.WriteLine("Press [space] to make another child from the parents");
     Console.WriteLine("Press '1' to replace parent 1 with the current child");
     Console.WriteLine("Press '2' to replace parent 2 with the current child");
@@ -70,7 +70,6 @@ class Program
     Console.Write("Parents: ");
     Console.Write(RenderColoredShape(parent1));
     Console.WriteLine(RenderColoredShape(parent2));
-
 
     // Making a child 😏
     double mutationRate = 1;
@@ -114,10 +113,21 @@ class Program
           break;
 
       }
+
       child = GeneticObject.Combine(parent1, parent2, rng.Next(4));
       if (rng.NextDouble() < mutationRate)
       {
-        child.Mutate("color", rng.Next(2), rng.Next(2) == 0);
+        int alleleIndex = rng.Next(2);
+        bool mutateUp = rng.Next(2) == 0;
+        bool willMutateColor = rng.Next(2) == 0;
+        if (willMutateColor)
+        {
+          child.Mutate("color", alleleIndex, mutateUp);
+        }
+        else
+        {
+          child.Mutate("shape", alleleIndex, mutateUp);
+        }
       }
     }
   }
